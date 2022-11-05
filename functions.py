@@ -1,30 +1,23 @@
-import re
-from typing import Any, Dict, List
+from typing import Generator, Iterable, List, Union
 
 
-def filter_query(param: str, data: List[str]) -> List[str]:
-    return list(filter(lambda x: param in x, data))
+def filter_query(param: str, data: Union[Generator, List[str]]):
+    return filter(lambda x: param in x, data)
 
 
-def map_query(param: str, data: List[str]) -> List[Dict[str, Dict[str, List[str]]]]:
-    col_number: int = int(param)
-    return list(map(lambda x: x.split(' ')[col_number], data))
+def map_query(param: str, data: Iterable[str]):
+    col_number = int(param)
+    return map(lambda x: x.split(' ')[col_number], data)
 
 
-def unique_query(data: List[str], *args: Any, **kwargs: Any) -> List[str]:
-    return list(set(data))
+def unique_query(data: Iterable[str], *args, **kwargs):
+    return set(data)
 
 
-def sort_query(param: str, data: List[str]) -> List[str]:
-    reverse: bool = False if param == 'asc' else True
-    return sorted(data, reverse=reverse)
+def sort_query(param: str, data: Iterable[str]):
+    return sorted(data, reverse=param == 'desc')
 
 
-def limit_query(param: str, data: List[str]) -> List[str]:
-    limit: int = int(param)
+def limit_query(param: str, data: Iterable[str]):
+    limit = int(param)
     return list(data)[:limit]
-
-
-def regex_query(param: str, data: List[str]) -> List[str]:
-    pattern: re.Pattern = re.compile(param)
-    return list(filter(lambda x: re.search(pattern, x), data))

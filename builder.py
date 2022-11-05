@@ -1,23 +1,28 @@
-from typing import Callable, Dict, List, Optional
+from typing import Iterable, Optional
 
-import functions
+from functions import filter_query, limit_query, map_query, sort_query, unique_query
 
-CMD_TO_FUNCTION: Dict[str, Callable] = {
-    'filter': functions.filter_query,
-    'map': functions.map_query,
-    'unique': functions.unique_query,
-    'sort': functions.sort_query,
-    'limit': functions.limit_query,
-    'regex': functions.regex_query,
+FILE_NAME = 'data/apache_logs.txt'
+
+CMD_TO_FUNCTION = {
+    'filter': filter_query,
+    'map': map_query,
+    'unique': unique_query,
+    'sort': sort_query,
+    'limit': limit_query,
 }
-FILE_NAME: str = 'data/apache_logs.txt'
 
 
-def build_query(cmd: str, param: str, data: Optional[List[str]]) -> List[str]:
+def iter_file(file_name: str):
+    with open(file_name) as file:
+        for row in file:
+            yield row
+
+
+def query_builder(cmd, value, data: Optional[Iterable[str]]):
     if data is None:
-        with open(FILE_NAME) as file:
-            prepared_data: List[str] = list(map(lambda x: x.strip(), file))
+        prepared_data = iter_file(FILE_NAME)
     else:
         prepared_data = data
-
-    return CMD_TO_FUNCTION[cmd](param=param, data=prepared_data)
+    result = CMD_TO_FUNCTION[cmd](param=value, data=prepared_data)
+    return list(result)

@@ -1,15 +1,7 @@
-from typing import Any, Dict, Iterable
-
 from marshmallow import Schema, ValidationError, fields, validates_schema
 
-VALID_CMD_PARAMS: Iterable[str] = (
-    'filter',
-    'sort',
-    'map',
-    'unique',
-    'limit',
-    'regex',
-)
+
+VALID_CMD = ('filter', 'map', 'unique', 'sort', 'limit')
 
 
 class RequestParams(Schema):
@@ -17,11 +9,9 @@ class RequestParams(Schema):
     value = fields.Str(required=True)
 
     @validates_schema
-    def validate_cmd_params(self, values: Dict[str, str], *args: Any, **kwargs: Any) -> Dict[str, str]:
-        if values['cmd'] not in VALID_CMD_PARAMS:
+    def validate_cmd_params(self, values, *args, **kwargs):
+        if values['cmd'] not in VALID_CMD:
             raise ValidationError('"cmd" contains invalid value')
-
-        return values
 
 
 class BatchRequestParams(Schema):
